@@ -1,0 +1,90 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "playNow": "Play Now",
+        "learnMore": "Learn More",
+        "new": "NEW",
+        "hot": "HOT",
+        "online": "ONLINE",
+        "soon": "SOON",
+        "comingSoon": "Coming Soon"
+    },
+    "navbar": {
+        "home": "Home",
+        "leaderboard": "Leaderboard",
+        "community": "Community",
+        "login": "Login",
+        "logout": "Logout",
+        "profile": "Profile"
+    },
+    "hero": {
+        "welcome": "WELCOME TO",
+        "subtitle": "Explore the retro gaming universe with unique Cyberpunk style. Challenge yourself and climb the leaderboard!",
+        "newUpdate": "NEW UPDATE"
+    },
+    "games": {
+        "tictactoe": {
+            "title": "Neon Tic-Tac-Toe",
+            "desc": "Classic X/O game with Cyberpunk style."
+        },
+        "binary": {
+            "title": "Binary Hacker",
+            "desc": "Decode the system by converting decimal to binary."
+        },
+        "memory": {
+            "title": "Memory Matrix",
+            "desc": "Ultimate memory challenge."
+        },
+        "shooter": {
+            "title": "Space Shooter",
+            "desc": "Shoot space ships."
+        },
+        "game2048": {
+            "title": "Neon 2048",
+            "desc": "Merge numbers to reach 2048."
+        },
+        "logicGates": {
+            "title": "Logic Gates",
+            "desc": "Solve logic circuit puzzles."
+        }
+    },
+    "footer": {
+        "desc": "Ultimate entertainment gaming platform with Cyberpunk style. Connect, compete, and win!",
+        "links": "Links",
+        "about": "About Us",
+        "terms": "Terms",
+        "privacy": "Privacy Policy",
+        "connect": "Connect",
+        "rights": "All rights reserved."
+    },
+    "login": {
+        "loginTitle": "LOGIN",
+        "registerTitle": "REGISTER",
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "submitLogin": "LOGIN",
+        "submitRegister": "REGISTER",
+        "haveAccount": "Already have an account?",
+        "noAccount": "Don't have an account?",
+        "loginNow": "Login now",
+        "registerNow": "Register now"
+    },
+    "profile": {
+        "title": "USER PROFILE",
+        "username": "Username",
+        "email": "Email",
+        "joined": "Joined",
+        "logout": "LOGOUT"
+    },
+    "leaderboard": {
+        "title": "HALL OF FAME",
+        "rank": "RANK",
+        "player": "PLAYER",
+        "score": "SCORE",
+        "game": "GAME"
+    }
+}
