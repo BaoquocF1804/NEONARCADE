@@ -48,7 +48,26 @@
         "logicGates": {
             "title": "Logic Gates",
             "desc": "Giải đố mạch điện tử logic."
+        },
+        "flappyBird": {
+            "title": "Neon Flappy",
+            "desc": "Điều khiển chim bay qua các ống neon."
+        },
+        "flexboxDefense": {
+            "title": "Flexbox Defense",
+            "desc": "Sử dụng CSS Flexbox để đặt tháp và bảo vệ căn cứ."
         }
+    },
+    "flappy": {
+        "score": "ĐIỂM",
+        "highScore": "CAO NHẤT",
+        "tapToStart": "CHẠM ĐỂ BẮT ĐẦU",
+        "playNow": "CHƠI NGAY",
+        "instructions": "Dùng phím Space hoặc Click chuột\nđể bay lên",
+        "gameOver": "KẾT THÚC",
+        "yourScore": "ĐIỂM CỦA BẠN",
+        "record": "KỶ LỤC",
+        "playAgain": "CHƠI LẠI"
     },
     "footer": {
         "desc": "Nền tảng game giải trí đỉnh cao với phong cách Cyberpunk. Kết nối, thi đấu và giành chiến thắng!",

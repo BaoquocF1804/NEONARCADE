@@ -27,7 +27,7 @@ const TicTacToe: React.FC = () => {
             const a = board[winCondition[0]];
             const b = board[winCondition[1]];
             const c = board[winCondition[2]];
-            
+
             if (a === '' || b === '' || c === '') {
                 continue;
             }
@@ -71,7 +71,7 @@ const TicTacToe: React.FC = () => {
     // Correct turn display logic (since isXNext flips immediately after click)
     // If game is over, use winner. If not, use isXNext.
     const currentPlayer = isXNext ? "X" : "O";
-    
+
     let statusMessage;
     if (winner === "Draw") {
         statusMessage = <span className="text-gray-300">Hòa nhau rồi! 🤝</span>;
@@ -90,46 +90,48 @@ const TicTacToe: React.FC = () => {
     }
 
     return (
-        <div className="bg-gray-900/90 p-8 rounded-2xl border border-cyber-pink shadow-[0_0_30px_rgba(217,70,239,0.3)] backdrop-blur-xl animate-fade-in-up">
-            <div className="flex justify-between mb-6 text-white font-heading text-xl font-bold text-center w-full">
-                <div className="w-full">{statusMessage}</div>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-3 mb-6">
-                {board.map((cell, index) => {
-                    const isWinningCell = winningLine.includes(index);
-                    const cellStyle = isWinningCell 
-                        ? { backgroundColor: 'rgba(6, 182, 212, 0.3)', borderColor: '#06b6d4' } 
-                        : {};
-                    
-                    const textColor = cell === 'X' ? 'text-cyber-accent shadow-[0_0_10px_#06b6d4]' : 'text-cyber-pink shadow-[0_0_10px_#d946ef]';
+        <div className="h-full flex items-center justify-center">
+            <div className="bg-gray-900/90 p-8 rounded-2xl border border-cyber-pink shadow-[0_0_30px_rgba(217,70,239,0.3)] backdrop-blur-xl animate-fade-in-up">
+                <div className="flex justify-between mb-6 text-white font-heading text-xl font-bold text-center w-full">
+                    <div className="w-full">{statusMessage}</div>
+                </div>
 
-                    return (
-                        <div 
-                            key={index}
-                            onClick={() => handleClick(index)}
-                            className={`
-                                w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center 
-                                text-4xl sm:text-5xl font-bold cursor-pointer 
-                                bg-white/5 border-2 border-slate-700 transition-all duration-200
-                                hover:bg-white/10 hover:border-cyber-accent font-heading
-                                ${cell ? textColor : ''}
-                            `}
-                            style={cellStyle}
-                        >
-                            {cell}
-                        </div>
-                    );
-                })}
-            </div>
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                    {board.map((cell, index) => {
+                        const isWinningCell = winningLine.includes(index);
+                        const cellStyle = isWinningCell
+                            ? { backgroundColor: 'rgba(6, 182, 212, 0.3)', borderColor: '#06b6d4' }
+                            : {};
 
-            <div className="flex justify-center">
-                <button 
-                    onClick={resetGame} 
-                    className="bg-gradient-to-r from-purple-600 to-cyber-pink hover:from-purple-500 hover:to-pink-500 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform transform active:scale-95"
-                >
-                    <i className="fas fa-redo mr-2"></i> Chơi Lại
-                </button>
+                        const textColor = cell === 'X' ? 'text-cyber-accent shadow-[0_0_10px_#06b6d4]' : 'text-cyber-pink shadow-[0_0_10px_#d946ef]';
+
+                        return (
+                            <div
+                                key={index}
+                                onClick={() => handleClick(index)}
+                                className={`
+                                    w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center 
+                                    text-4xl sm:text-5xl font-bold cursor-pointer 
+                                    bg-white/5 border-2 border-slate-700 transition-all duration-200
+                                    hover:bg-white/10 hover:border-cyber-accent font-heading
+                                    ${cell ? textColor : ''}
+                                `}
+                                style={cellStyle}
+                            >
+                                {cell}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="flex justify-center">
+                    <button
+                        onClick={resetGame}
+                        className="bg-gradient-to-r from-purple-600 to-cyber-pink hover:from-purple-500 hover:to-pink-500 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform transform active:scale-95"
+                    >
+                        <i className="fas fa-redo mr-2"></i> Chơi Lại
+                    </button>
+                </div>
             </div>
         </div>
     );

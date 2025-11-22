@@ -48,7 +48,26 @@
         "logicGates": {
             "title": "Logic Gates",
             "desc": "Solve logic circuit puzzles."
+        },
+        "flappyBird": {
+            "title": "Neon Flappy",
+            "desc": "Navigate the bird through neon pipes."
+        },
+        "flexboxDefense": {
+            "title": "Flexbox Defense",
+            "desc": "Use CSS Flexbox to position towers and defend your base."
         }
+    },
+    "flappy": {
+        "score": "SCORE",
+        "highScore": "HIGH SCORE",
+        "tapToStart": "TAP TO START",
+        "playNow": "PLAY NOW",
+        "instructions": "Use Space key or Click to fly",
+        "gameOver": "GAME OVER",
+        "yourScore": "YOUR SCORE",
+        "record": "RECORD",
+        "playAgain": "PLAY AGAIN"
     },
     "footer": {
         "desc": "Ultimate entertainment gaming platform with Cyberpunk style. Connect, compete, and win!",

@@ -8,7 +8,7 @@ import GameModal from './components/GameModal';
 import Login from './pages/Login';
 import UserInfo from './pages/UserInfo';
 import Leaderboard from './pages/Leaderboard';
-import { Game, GameType } from './types';
+import { Game, GameType, GameCategory } from './types';
 
 const GAMES: Game[] = [
     {
@@ -19,6 +19,7 @@ const GAMES: Game[] = [
         icon: "fas fa-hashtag",
         colorClass: "text-cyber-accent",
         gradientClass: "from-purple-900 to-indigo-900",
+        category: GameCategory.PUZZLE,
         isOnline: true
     },
     {
@@ -29,6 +30,7 @@ const GAMES: Game[] = [
         icon: "fas fa-microchip",
         colorClass: "text-green-400",
         gradientClass: "from-green-900 to-emerald-900",
+        category: GameCategory.PROGRAMMING,
         isHot: true
     },
     {
@@ -39,6 +41,7 @@ const GAMES: Game[] = [
         icon: "fas fa-brain",
         colorClass: "text-green-400",
         gradientClass: "from-green-900 to-emerald-800",
+        category: GameCategory.PUZZLE,
         isComingSoon: true
     },
     {
@@ -49,6 +52,7 @@ const GAMES: Game[] = [
         icon: "fas fa-th",
         colorClass: "text-yellow-400",
         gradientClass: "from-yellow-900 to-orange-900",
+        category: GameCategory.PUZZLE,
         isNew: true
     },
     {
@@ -59,6 +63,7 @@ const GAMES: Game[] = [
         icon: "fas fa-project-diagram",
         colorClass: "text-cyan-400",
         gradientClass: "from-cyan-900 to-blue-900",
+        category: GameCategory.PROGRAMMING,
         isNew: true
     },
     {
@@ -69,12 +74,38 @@ const GAMES: Game[] = [
         icon: "fas fa-rocket",
         colorClass: "text-blue-400",
         gradientClass: "from-blue-900 to-cyan-900",
-        isComingSoon: true
+        category: GameCategory.ACTION,
+        isHot: true
+    },
+    {
+        id: GameType.FLAPPY_BIRD,
+        title: "games.flappyBird.title",
+        description: "games.flappyBird.desc",
+        rating: 4.8,
+        icon: "fas fa-dove",
+        colorClass: "text-pink-500",
+        gradientClass: "from-pink-900 to-purple-900",
+        category: GameCategory.ACTION,
+        isNew: true
+    },
+    {
+        id: GameType.FLEXBOX_DEFENSE,
+        title: "games.flexboxDefense.title",
+        description: "games.flexboxDefense.desc",
+        rating: 4.9,
+        icon: "fas fa-shield-alt",
+        colorClass: "text-cyan-400",
+        gradientClass: "from-cyan-900 to-blue-900",
+        category: GameCategory.PUZZLE,
+        isNew: true
     }
 ];
 
+// ... (GAMES array remains same)
+
 const Home: React.FC = () => {
     const [activeGame, setActiveGame] = useState<GameType | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<GameCategory>(GameCategory.ALL);
 
     const handleOpenGame = (game: Game) => {
         if (game.isComingSoon) {
@@ -89,6 +120,18 @@ const Home: React.FC = () => {
         setActiveGame(null);
         document.body.style.overflow = 'auto';
     };
+
+    const filteredGames = selectedCategory === GameCategory.ALL
+        ? GAMES
+        : GAMES.filter(game => game.category === selectedCategory);
+
+    const categories = [
+        { id: GameCategory.ALL, label: 'Tất cả' },
+        { id: GameCategory.PROGRAMMING, label: 'Lập trình' },
+        { id: GameCategory.ACTION, label: 'Hành động' },
+        { id: GameCategory.PUZZLE, label: 'Trí tuệ' },
+        { id: GameCategory.SPORTS, label: 'Thể thao' },
+    ];
 
     return (
         <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -109,32 +152,35 @@ const Home: React.FC = () => {
 
                 {/* Filter/Category Bar */}
                 <div className="flex flex-wrap gap-4 mb-8 justify-center md:justify-start" id="games-section">
-                    <button className="px-6 py-2 rounded-full bg-cyber-accent text-black font-bold shadow-lg shadow-cyan-500/30 transition-transform transform hover:scale-105">
-                        Tất cả
-                    </button>
-                    <button className="px-6 py-2 rounded-full glass-card hover:bg-gray-700 text-gray-300 transition-all hover:text-white">
-                        Lập trình
-                    </button>
-                    <button className="px-6 py-2 rounded-full glass-card hover:bg-gray-700 text-gray-300 transition-all hover:text-white">
-                        Hành động
-                    </button>
-                    <button className="px-6 py-2 rounded-full glass-card hover:bg-gray-700 text-gray-300 transition-all hover:text-white">
-                        Trí tuệ
-                    </button>
-                    <button className="px-6 py-2 rounded-full glass-card hover:bg-gray-700 text-gray-300 transition-all hover:text-white">
-                        Thể thao
-                    </button>
+                    {categories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setSelectedCategory(cat.id)}
+                            className={`px-6 py-2 rounded-full font-bold transition-all transform hover:scale-105 ${selectedCategory === cat.id
+                                ? 'bg-cyber-accent text-black shadow-lg shadow-cyan-500/30'
+                                : 'glass-card hover:bg-gray-700 text-gray-300 hover:text-white'
+                                }`}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Game Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {GAMES.map((game) => (
-                        <GameCard
-                            key={game.id}
-                            game={game}
-                            onClick={() => handleOpenGame(game)}
-                        />
-                    ))}
+                    {filteredGames.length > 0 ? (
+                        filteredGames.map((game) => (
+                            <GameCard
+                                key={game.id}
+                                game={game}
+                                onClick={() => handleOpenGame(game)}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center text-gray-500 py-12">
+                            No games found in this category.
+                        </div>
+                    )}
                 </div>
             </main>
 
