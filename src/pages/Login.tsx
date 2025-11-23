@@ -22,18 +22,23 @@ const Login: React.FC = () => {
             let data;
             if (isLogin) {
                 data = await api.login(email, password);
+                localStorage.setItem('token', data.token);
+                // Backend returns user in 'result' field
+                localStorage.setItem('user', JSON.stringify(data.result));
+                navigate('/');
+                window.location.reload();
             } else {
                 if (password !== confirmPassword) {
                     setError('Mật khẩu không khớp');
                     return;
                 }
-                data = await api.register(username, email, password);
+                await api.register(username, email, password);
+                setIsLogin(true);
+                setError('Đăng ký thành công! Vui lòng đăng nhập.');
+                // Clear form fields
+                setPassword('');
+                setConfirmPassword('');
             }
-
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            navigate('/');
-            window.location.reload(); // Reload to update Navbar state
         } catch (err: any) {
             setError(err.message || 'Có lỗi xảy ra');
         }
