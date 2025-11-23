@@ -180,11 +180,11 @@ const MemoryMatrix: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center w-full h-full bg-[#050505] text-[#00f3ff] font-['Orbitron'] relative overflow-hidden p-4 rounded-xl">
+        <div className="flex flex-col items-center justify-center w-full h-full bg-[#050505] text-[#00f3ff] font-['Chakra_Petch'] relative overflow-hidden p-4 rounded-xl">
 
             {/* Custom Styles for Animations */}
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&display=swap');
                 
                 .bg-grid {
                     background-image: 
