@@ -1,6 +1,15 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import fs from 'fs';
+import path from 'path';
+
+const logFile = path.join(process.cwd(), 'server', 'debug.log');
+
+const log = (msg) => {
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(logFile, `[${timestamp}] ${msg}\n`);
+};
 
 const SECRET_KEY = process.env.JWT_SECRET || 'neon-arcade-secret-key';
 

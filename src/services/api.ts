@@ -10,7 +10,16 @@ export const api = {
             body: JSON.stringify({ username, email, password }),
         });
 
-        const data = await response.json();
+        let data;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            console.error('Non-JSON response:', text);
+            throw new Error('Server returned non-JSON response. Check console for details.');
+        }
+
         if (!response.ok) {
             throw new Error(data.message || 'Registration failed');
         }
@@ -26,7 +35,16 @@ export const api = {
             body: JSON.stringify({ email, password }),
         });
 
-        const data = await response.json();
+        let data;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            console.error('Non-JSON response:', text);
+            throw new Error('Server returned non-JSON response. Check console for details.');
+        }
+
         if (!response.ok) {
             throw new Error(data.message || 'Login failed');
         }
