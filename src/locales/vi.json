@@ -9,7 +9,8 @@
         "hot": "HOT",
         "online": "ONLINE",
         "soon": "SẮP RA MẮT",
-        "comingSoon": "Sắp ra mắt"
+        "comingSoon": "Sắp ra mắt",
+        "backToList": "Quay lại danh sách"
     },
     "navbar": {
         "home": "Trang chủ",
@@ -25,10 +26,6 @@
         "newUpdate": "MỚI CẬP NHẬT"
     },
     "games": {
-        "tictactoe": {
-            "title": "Neon Tic-Tac-Toe",
-            "desc": "Trò chơi X/O cổ điển với phong cách Cyberpunk."
-        },
         "binary": {
             "title": "Binary Hacker",
             "desc": "Giải mã hệ thống bằng cách chuyển đổi số thập phân sang nhị phân."

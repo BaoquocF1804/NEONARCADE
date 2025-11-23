@@ -9,7 +9,8 @@
         "hot": "HOT",
         "online": "ONLINE",
         "soon": "SOON",
-        "comingSoon": "Coming Soon"
+        "comingSoon": "Coming Soon",
+        "backToList": "Back to List"
     },
     "navbar": {
         "home": "Home",
@@ -25,10 +26,6 @@
         "newUpdate": "NEW UPDATE"
     },
     "games": {
-        "tictactoe": {
-            "title": "Neon Tic-Tac-Toe",
-            "desc": "Classic X/O game with Cyberpunk style."
-        },
         "binary": {
             "title": "Binary Hacker",
             "desc": "Decode the system by converting decimal to binary."

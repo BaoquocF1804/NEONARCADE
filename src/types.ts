@@ -1,12 +1,13 @@
 export enum GameType {
-    TICTACTOE = 'TICTACTOE',
+
     BINARY = 'BINARY',
     MEMORY = 'MEMORY',
     SHOOTER = 'SHOOTER',
     GAME2048 = 'GAME2048',
     LOGIC_GATES = 'LOGIC_GATES',
     FLAPPY_BIRD = 'FLAPPY_BIRD',
-    FLEXBOX_DEFENSE = 'FLEXBOX_DEFENSE'
+    FLEXBOX_DEFENSE = 'FLEXBOX_DEFENSE',
+    GOMOKU = 'GOMOKU'
 }
 
 export enum GameCategory {

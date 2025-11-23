@@ -11,17 +11,7 @@ import Leaderboard from './pages/Leaderboard';
 import { Game, GameType, GameCategory } from './types';
 
 const GAMES: Game[] = [
-    {
-        id: GameType.TICTACTOE,
-        title: "games.tictactoe.title",
-        description: "games.tictactoe.desc",
-        rating: 4.8,
-        icon: "fas fa-hashtag",
-        colorClass: "text-cyber-accent",
-        gradientClass: "from-purple-900 to-indigo-900",
-        category: GameCategory.PUZZLE,
-        isOnline: true
-    },
+
     {
         id: GameType.BINARY,
         title: "games.binary.title",
@@ -42,7 +32,7 @@ const GAMES: Game[] = [
         colorClass: "text-green-400",
         gradientClass: "from-green-900 to-emerald-800",
         category: GameCategory.PUZZLE,
-        isComingSoon: true
+        isNew: true
     },
     {
         id: GameType.GAME2048,
@@ -98,6 +88,18 @@ const GAMES: Game[] = [
         gradientClass: "from-cyan-900 to-blue-900",
         category: GameCategory.PUZZLE,
         isNew: true
+    },
+    {
+        id: GameType.GOMOKU,
+        title: "Neon Gomoku",
+        description: "Classic Gomoku with a Cyberpunk twist. Play against AI or Online.",
+        rating: 4.9,
+        icon: "fas fa-circle",
+        colorClass: "text-fuchsia-400",
+        gradientClass: "from-fuchsia-900 to-purple-900",
+        category: GameCategory.PUZZLE,
+        isNew: true,
+        isOnline: true
     }
 ];
 
@@ -126,11 +128,11 @@ const Home: React.FC = () => {
         : GAMES.filter(game => game.category === selectedCategory);
 
     const categories = [
-        { id: GameCategory.ALL, label: 'Tất cả' },
-        { id: GameCategory.PROGRAMMING, label: 'Lập trình' },
-        { id: GameCategory.ACTION, label: 'Hành động' },
-        { id: GameCategory.PUZZLE, label: 'Trí tuệ' },
-        { id: GameCategory.SPORTS, label: 'Thể thao' },
+        { id: GameCategory.ALL, label: 'All' },
+        { id: GameCategory.PROGRAMMING, label: 'Programming' },
+        { id: GameCategory.ACTION, label: 'Action' },
+        { id: GameCategory.PUZZLE, label: 'Puzzle' },
+        { id: GameCategory.SPORTS, label: 'Sports' },
     ];
 
     return (
