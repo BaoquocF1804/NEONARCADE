@@ -36,6 +36,17 @@ A cyberpunk-themed arcade platform with a React frontend and Node.js/Express bac
    cd ..
    ```
 
+### Environment Variables
+
+- Frontend: create `.env` (or `.env.local`) in the project root and set `VITE_SOCKET_URL` to the URL of the backend socket server if it is not `http://localhost:5000`.
+  ```bash
+  VITE_SOCKET_URL=http://localhost:5000
+  ```
+- Backend: optionally set `CLIENT_ORIGIN` (comma-separated) to restrict which origins can open WebSocket connections.
+  ```bash
+  CLIENT_ORIGIN=http://localhost:3000
+  ```
+
 ### Running the Application
 
 You need to run both the frontend and backend servers.
@@ -54,6 +65,12 @@ You need to run both the frontend and backend servers.
    npm run dev
    ```
    The frontend will start on `http://localhost:3000`.
+
+### Gomoku Online Battles
+
+- The backend now hosts a lightweight Socket.IO service that powers real-time Gomoku matches (create/join room, live board sync, rematch handling, disconnect detection).
+- Ensure both servers are running and the frontend can reach the socket endpoint (`VITE_SOCKET_URL`).
+- When deploying, keep the websocket server and API server on the same origin or update the environment variables accordingly.
 
 ## API Endpoints
 

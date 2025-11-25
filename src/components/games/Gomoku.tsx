@@ -1,38 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import {
-    getFirestore, doc, setDoc, onSnapshot, updateDoc, getDoc
-} from 'firebase/firestore';
-import {
-    getAuth, signInAnonymously, onAuthStateChanged, User
-} from 'firebase/auth';
+import React, { useState, useEffect, useRef } from 'react';
+import { io, Socket } from 'socket.io-client';
 import {
     ArrowLeft, RefreshCw, Trophy, RotateCcw, X, Circle, Cpu, Users, Globe, Copy, Check, Clock, Menu as MenuIcon
 } from 'lucide-react';
-
-// --- FIREBASE SETUP ---
-let app;
-let auth;
-let db;
-const appId = (window as any).__app_id || 'default-app-id';
-
-try {
-    const firebaseConfig = (window as any).__firebase_config ? JSON.parse((window as any).__firebase_config) : null;
-    if (firebaseConfig) {
-        app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-        auth = getAuth(app);
-        db = getFirestore(app);
-    }
-} catch (e) {
-    console.warn("Firebase config not found or invalid. Online mode will be disabled.");
-}
 
 // --- CONSTANTS & UTILS ---
 const BOARD_SIZE = 15;
 const WIN_STREAK = 5;
 const TURN_TIME = 30;
 
-const generateRoomId = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
+    || (window.location.hostname === 'localhost'
+        ? 'http://localhost:5000'
+        : `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`);
 
 const checkWinner = (board: (string | null)[], size = BOARD_SIZE) => {
     const directions = [
@@ -130,10 +110,11 @@ const getBestMove = (board: (string | null)[]) => {
 
 // --- SUB-COMPONENTS ---
 
-const GameStatus = ({ isXNext, winner, onReset, onUndo, canUndo, timeLeft, mode, onlineStatus, roomId, mySide, onMenu }) => {
+const GameStatus = ({ isXNext, winner, onReset, onUndo, canUndo, timeLeft, mode, onlineStatus, roomId, mySide, onMenu, onlineMessage }) => {
     const [isCopied, setIsCopied] = useState(false);
 
     const copyRoomId = () => {
+        if (!roomId) return;
         navigator.clipboard.writeText(roomId);
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
@@ -208,20 +189,46 @@ const GameStatus = ({ isXNext, winner, onReset, onUndo, canUndo, timeLeft, mode,
             {/* Online Info Bar */}
             {mode === 'online-play' && (
                 <div className="w-full bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 backdrop-blur-md">
-                    <div className="flex items-center gap-3">
-                        <span className={`w-2 h-2 rounded-full animate-pulse ${onlineStatus === 'ready' ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                        <span className="text-slate-300 text-sm font-medium">
-                            {onlineStatus === 'ready' ? 'Đang đấu' : 'Đang chờ đối thủ...'}
-                        </span>
+                    <div className="flex items-center gap-3 text-center sm:text-left">
+                        <span
+                            className={`w-2 h-2 rounded-full animate-pulse ${
+                                onlineStatus === 'ready'
+                                    ? 'bg-green-500'
+                                    : onlineStatus === 'error'
+                                        ? 'bg-red-500'
+                                        : onlineStatus === 'opponent-left'
+                                            ? 'bg-orange-400'
+                                            : 'bg-yellow-500'
+                            }`}
+                        />
+                        <div className="flex flex-col">
+                            <span className="text-slate-300 text-sm font-medium">
+                                {onlineStatus === 'ready' && 'Đang đấu'}
+                                {onlineStatus === 'waiting' && 'Đang chờ đối thủ...'}
+                                {onlineStatus === 'creating' && 'Đang tạo phòng...'}
+                                {onlineStatus === 'joining' && 'Đang vào phòng...'}
+                                {onlineStatus === 'disconnected' && 'Mất kết nối tới máy chủ'}
+                                {onlineStatus === 'error' && 'Không thể kết nối'}
+                                {onlineStatus === 'opponent-left' && 'Đối thủ đã thoát'}
+                                {!onlineStatus && 'Đang chuẩn bị...'}
+                            </span>
+                            {onlineMessage && (
+                                <span className="text-xs text-slate-500 max-w-xs">{onlineMessage}</span>
+                            )}
+                        </div>
                     </div>
                     <div className="flex items-center gap-2 bg-black/30 px-3 py-1 rounded-lg border border-slate-800">
                         <span className="text-slate-400 text-xs uppercase tracking-wider">Mã phòng:</span>
-                        <span className="font-mono text-yellow-400 font-bold tracking-widest">{roomId}</span>
-                        <button onClick={copyRoomId} className="ml-2 text-slate-400 hover:text-white transition-colors">
+                        <span className="font-mono text-yellow-400 font-bold tracking-widest">{roomId || '------'}</span>
+                        <button
+                            onClick={copyRoomId}
+                            className="ml-2 text-slate-400 hover:text-white transition-colors disabled:opacity-40"
+                            disabled={!roomId}
+                        >
                             {isCopied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
                         </button>
                     </div>
-                    <div className="text-slate-400 text-sm">Bạn là: <span className="font-bold text-white">{mySide}</span></div>
+                    <div className="text-slate-400 text-sm">Bạn là: <span className="font-bold text-white">{mySide || '--'}</span></div>
                 </div>
             )}
         </div>
@@ -270,7 +277,6 @@ const WinnerModal = ({ winner, onReset, onMenu }) => {
 // --- MAIN COMPONENT ---
 
 export default function Gomoku() {
-    const [user, setUser] = useState<User | null>(null);
     const [mode, setMode] = useState('menu');
     const [board, setBoard] = useState<(string | null)[]>(Array(BOARD_SIZE * BOARD_SIZE).fill(null));
     const [turn, setTurn] = useState('X');
@@ -282,18 +288,57 @@ export default function Gomoku() {
 
     // Online State
     const [roomId, setRoomId] = useState('');
+    const [roomInput, setRoomInput] = useState('');
     const [mySide, setMySide] = useState<string | null>(null);
     const [onlineStatus, setOnlineStatus] = useState('');
+    const [onlineMessage, setOnlineMessage] = useState('');
+    const [socketReady, setSocketReady] = useState(false);
+    const socketRef = useRef<Socket | null>(null);
 
-    // Init Auth
     useEffect(() => {
-        if (!auth) return;
-        const initAuth = async () => {
-            try { await signInAnonymously(auth); } catch (e) { console.error(e); }
+        const socket = io(SOCKET_URL, { transports: ['websocket'] });
+        socketRef.current = socket;
+
+        const handleRoomUpdate = (payload: {
+            board: (string | null)[];
+            turn: 'X' | 'O';
+            lastMove: number | null;
+            winner: string | null;
+            winLine?: number[];
+            playersReady: boolean;
+        }) => {
+            setBoard(payload.board);
+            setTurn(payload.turn);
+            setLastMove(payload.lastMove);
+            setWinner(payload.winner);
+            setWinLine(payload.winLine || []);
+            setOnlineStatus(payload.playersReady ? 'ready' : 'waiting');
+            setOnlineMessage('');
         };
-        initAuth();
-        const unsubscribe = onAuthStateChanged(auth, setUser);
-        return () => unsubscribe();
+
+        socket.on('connect', () => {
+            setSocketReady(true);
+            setOnlineStatus((prev) => (prev === 'disconnected' ? '' : prev));
+            setOnlineMessage('');
+        });
+        socket.on('disconnect', () => {
+            setSocketReady(false);
+            setOnlineStatus('disconnected');
+            setOnlineMessage('Mất kết nối tới máy chủ, vui lòng thử lại.');
+        });
+        socket.on('roomUpdate', handleRoomUpdate);
+        socket.on('roomError', (message: string) => {
+            setOnlineStatus('error');
+            setOnlineMessage(message);
+        });
+        socket.on('opponentLeft', (message: string) => {
+            setOnlineStatus('opponent-left');
+            setOnlineMessage(message || 'Đối thủ đã rời phòng');
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
     // Timer
@@ -311,6 +356,12 @@ export default function Gomoku() {
     }, [turn, mode, winner, onlineStatus]);
 
     useEffect(() => setTimeLeft(TURN_TIME), [turn]);
+
+    useEffect(() => {
+        if (mode === 'online-setup') {
+            setOnlineMessage('');
+        }
+    }, [mode]);
 
     // Game Logic
     const resetGame = () => {
@@ -340,10 +391,20 @@ export default function Gomoku() {
         setWinLine([]);
     };
 
-    const handleMove = async (idx: number) => {
+    const handleMove = (idx: number) => {
         if (board[idx] || winner) return;
-        if (mode === 'online-play' && turn !== mySide) return;
-        if (mode === 'online-play' && onlineStatus !== 'ready') return;
+        if (mode === 'online-play') {
+            if (!mySide || turn !== mySide) return;
+            if (onlineStatus !== 'ready') return;
+            if (!socketRef.current || !roomId) {
+                setOnlineMessage('Không tìm thấy kết nối tới phòng.');
+                return;
+            }
+            socketRef.current.emit('makeMove', { roomId, index: idx }, (response?: { error?: string }) => {
+                if (response?.error) setOnlineMessage(response.error);
+            });
+            return;
+        }
 
         // Local & Bot
         if (mode === 'local' || mode === 'bot') {
@@ -383,77 +444,89 @@ export default function Gomoku() {
                 }, 500);
             }
         }
-
-        // Online
-        if (mode === 'online-play' && db) {
-            const newBoard = [...board];
-            newBoard[idx] = mySide!;
-            const winResult = checkWinner(newBoard);
-            const nextTurn = mySide === 'X' ? 'O' : 'X';
-
-            try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', `gomoku_rooms_${roomId}`), {
-                    board: newBoard,
-                    turn: nextTurn,
-                    lastMove: idx,
-                    winner: winResult ? winResult.winner : null,
-                    winLine: winResult ? winResult.line : []
-                });
-            } catch (error) { console.error(error); }
-        }
     };
 
-    // Online Listener
-    useEffect(() => {
-        if (mode === 'online-play' && roomId && db) {
-            const unsub = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', `gomoku_rooms_${roomId}`), (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    setBoard(data.board);
-                    setTurn(data.turn);
-                    setLastMove(data.lastMove);
-                    setWinner(data.winner);
-                    setWinLine(data.winLine || []);
-                    if (data.playerO && data.playerX) setOnlineStatus('ready');
-                    else setOnlineStatus('waiting');
-                }
-            });
-            return () => unsub();
-        }
-    }, [mode, roomId]);
-
     // Room Functions
-    const createRoom = async () => {
-        if (!user || !db) { alert("Online unavailable"); return; }
-        const newRoomId = generateRoomId();
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', `gomoku_rooms_${newRoomId}`), {
-            board: Array(BOARD_SIZE * BOARD_SIZE).fill(null),
-            turn: 'X',
-            playerX: user.uid,
-            playerO: null,
-            winner: null,
-            createdAt: Date.now()
-        });
-        setRoomId(newRoomId);
-        setMySide('X');
-        setMode('online-play');
-        setOnlineStatus('waiting');
+    const leaveOnlineRoom = () => {
+        if (socketRef.current && roomId) {
+            socketRef.current.emit('leaveRoom', { roomId });
+        }
+        setRoomId('');
+        setMySide(null);
+        setOnlineStatus('');
+        setOnlineMessage('');
+    };
+
+    const handleReset = () => {
+        if (mode === 'online-play') {
+            if (socketRef.current && roomId) {
+                socketRef.current.emit('resetRoom', { roomId });
+                setOnlineMessage('Đang chờ máy chủ đặt lại ván...');
+            }
+            return;
+        }
         resetGame();
     };
 
-    const joinRoom = async () => {
-        if (!user || !roomId || !db) { alert("Online unavailable"); return; }
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', `gomoku_rooms_${roomId}`);
-        const snap = await getDoc(roomRef);
-        if (snap.exists()) {
-            const data = snap.data();
-            if (!data.playerO) {
-                await updateDoc(roomRef, { playerO: user.uid });
-                setMySide('O');
-                setMode('online-play');
-                setOnlineStatus('ready');
-            } else { alert("Phòng đầy!"); }
-        } else { alert("Không tìm thấy phòng!"); }
+    const createRoom = () => {
+        if (!socketRef.current) {
+            setOnlineStatus('error');
+            setOnlineMessage('Không thể kết nối tới máy chủ');
+            return;
+        }
+        if (roomId) leaveOnlineRoom();
+        setOnlineStatus('creating');
+        setOnlineMessage('');
+        socketRef.current.emit('createRoom', (response?: { roomId?: string; side?: string; error?: string }) => {
+            if (response?.error || !response?.roomId || !response?.side) {
+                setOnlineStatus('error');
+                setOnlineMessage(response?.error || 'Không thể tạo phòng');
+                return;
+            }
+            setRoomId(response.roomId);
+            setMySide(response.side);
+            setMode('online-play');
+            setOnlineStatus('waiting');
+            resetGame();
+        });
+    };
+
+    const joinRoom = (code?: string) => {
+        const roomCode = (code || roomInput).trim().toUpperCase();
+        if (!roomCode) {
+            setOnlineMessage('Vui lòng nhập mã phòng');
+            return;
+        }
+        if (!socketRef.current) {
+            setOnlineStatus('error');
+            setOnlineMessage('Không thể kết nối tới máy chủ');
+            return;
+        }
+        if (roomId) leaveOnlineRoom();
+        setOnlineStatus('joining');
+        setOnlineMessage('');
+        socketRef.current.emit('joinRoom', { roomId: roomCode }, (response?: { error?: string; side?: string; playersReady?: boolean }) => {
+            if (response?.error || !response?.side) {
+                setOnlineStatus('error');
+                setOnlineMessage(response?.error || 'Không thể tham gia phòng');
+                return;
+            }
+            setRoomId(roomCode);
+            setMySide(response.side);
+            setMode('online-play');
+            setOnlineStatus(response.playersReady ? 'ready' : 'waiting');
+            setOnlineMessage('');
+            setRoomInput('');
+        });
+    };
+
+    const goToMenu = () => {
+        if (mode === 'online-play') {
+            leaveOnlineRoom();
+        }
+        setMode('menu');
+        resetGame();
+        setRoomInput('');
     };
 
     // --- RENDER ---
@@ -505,7 +578,7 @@ export default function Gomoku() {
 
     const OnlineSetup = () => (
         <div className="w-full max-w-md mx-auto p-6 bg-slate-800/50 border border-slate-700 rounded-2xl backdrop-blur-sm z-20 relative">
-            <button onClick={() => setMode('menu')} className="flex items-center text-slate-400 hover:text-white mb-6 text-sm font-medium">
+            <button onClick={goToMenu} className="flex items-center text-slate-400 hover:text-white mb-6 text-sm font-medium">
                 <ArrowLeft size={16} className="mr-2" /> Quay lại
             </button>
 
@@ -513,10 +586,26 @@ export default function Gomoku() {
                 <Globe className="text-yellow-400" /> Đấu Online
             </h2>
 
+            {!socketReady && (
+                <div className="mb-4 text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 px-4 py-2 rounded-lg">
+                    Đang kết nối tới máy chủ trò chơi...
+                </div>
+            )}
+
+            {onlineMessage && (
+                <div className="mb-4 text-sm text-red-300 bg-red-500/10 border border-red-500/30 px-4 py-2 rounded-lg">
+                    {onlineMessage}
+                </div>
+            )}
+
             <div className="space-y-6">
                 <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                     <h3 className="text-slate-300 font-semibold mb-3">Tạo phòng mới</h3>
-                    <button onClick={createRoom} className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-900/20 transition-all">
+                    <button
+                        onClick={createRoom}
+                        disabled={!socketReady || onlineStatus === 'creating'}
+                        className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-900/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
                         Tạo phòng ngay
                     </button>
                 </div>
@@ -529,16 +618,25 @@ export default function Gomoku() {
 
                 <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                     <h3 className="text-slate-300 font-semibold mb-3">Nhập mã phòng</h3>
-                    <div className="flex gap-2">
-                        <input
-                            value={roomId}
-                            onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-                            placeholder="Nhập mã (VD: X9A2...)"
-                            className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500 transition-colors font-mono uppercase"
-                        />
-                        <button onClick={joinRoom} className="px-6 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors">
-                            Vào
-                        </button>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex gap-2">
+                            <input
+                                value={roomInput}
+                                onChange={(e) => setRoomInput(e.target.value.toUpperCase())}
+                                placeholder="Nhập mã (VD: X9A2...)"
+                                className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500 transition-colors font-mono uppercase"
+                            />
+                            <button
+                                onClick={() => joinRoom(roomInput)}
+                                disabled={!socketReady || !roomInput}
+                                className="px-6 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                Vào
+                            </button>
+                        </div>
+                        <p className="text-xs text-slate-500">
+                            Chia sẻ mã phòng với bạn bè để họ có thể tham gia nhanh chóng.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -571,7 +669,7 @@ export default function Gomoku() {
                         <GameStatus
                             isXNext={turn === 'X'}
                             winner={winner}
-                            onReset={resetGame}
+                            onReset={handleReset}
                             onUndo={undoMove}
                             canUndo={history.length > 0}
                             timeLeft={timeLeft}
@@ -579,7 +677,8 @@ export default function Gomoku() {
                             onlineStatus={onlineStatus}
                             roomId={roomId}
                             mySide={mySide}
-                            onMenu={() => setMode('menu')}
+                            onMenu={goToMenu}
+                            onlineMessage={onlineMessage}
                         />
 
                         {/* Board Container */}
@@ -650,7 +749,7 @@ export default function Gomoku() {
                 </div>
             )}
 
-            <WinnerModal winner={winner} onReset={resetGame} onMenu={() => setMode('menu')} />
+            <WinnerModal winner={winner} onReset={handleReset} onMenu={goToMenu} />
 
             {/* Footer */}
             <div className="absolute bottom-2 md:bottom-4 text-slate-500 text-[10px] md:text-xs font-mono opacity-50 pointer-events-none">
