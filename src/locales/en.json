@@ -102,5 +102,55 @@
         "player": "PLAYER",
         "score": "SCORE",
         "game": "GAME"
+    },
+    "shooter": {
+        "score": "SCORE",
+        "highScore": "HIGH SCORE",
+        "pressStart": "PRESS START",
+        "startMission": "START MISSION",
+        "instructions": "Use Arrow Keys to Move<br />Spacebar to Shoot",
+        "missionFailed": "MISSION FAILED",
+        "retry": "RETRY"
+    },
+    "game2048": {
+        "score": "SCORE",
+        "best": "BEST",
+        "newGame": "NEW GAME",
+        "tryAgain": "TRY AGAIN",
+        "gameOver": "GAME OVER",
+        "youWin": "YOU WIN!",
+        "victory": "VICTORY!",
+        "reached2048": "You reached 2048!",
+        "keepGoing": "KEEP GOING",
+        "continue": "CONTINUE",
+        "retry": "RETRY",
+        "replay": "REPLAY",
+        "instructions": "SWIPE OR USE ARROW KEYS"
+    },
+    "binary": {
+        "score": "SCORE",
+        "timeLeft": "TIME LEFT",
+        "target": "TARGET",
+        "current": "CURRENT",
+        "start": "START",
+        "gameOver": "GAME OVER",
+        "finalScore": "FINAL SCORE",
+        "playAgain": "PLAY AGAIN",
+        "submit": "SUBMIT"
+    },
+    "memory": {
+        "retry": "RETRY",
+        "gameOver": "GAME OVER",
+        "level": "LEVEL",
+        "score": "SCORE",
+        "lives": "LIVES",
+        "finalScore": "Final Score"
+    },
+    "commonGame": {
+        "score": "SCORE",
+        "highScore": "HIGH SCORE",
+        "retry": "RETRY",
+        "playAgain": "PLAY AGAIN",
+        "gameOver": "GAME OVER"
     }
 }

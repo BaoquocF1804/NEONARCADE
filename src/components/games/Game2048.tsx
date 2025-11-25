@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Tile {
     id: string;
@@ -11,6 +12,7 @@ interface Tile {
 }
 
 const Game2048: React.FC = () => {
+    const { t } = useTranslation();
     const [tiles, setTiles] = useState<Tile[]>([]);
     const [score, setScore] = useState(0);
     const [bestScore, setBestScore] = useState(0);
@@ -287,11 +289,11 @@ const Game2048: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                     <div className="bg-white/5 border border-white/10 rounded-lg p-2 flex flex-col items-center min-w-[70px]">
-                        <span className="text-[10px] text-gray-400 uppercase tracking-wider">Score</span>
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wider">{t('game2048.score')}</span>
                         <span className="text-lg font-bold text-white">{score}</span>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-lg p-2 flex flex-col items-center min-w-[70px]">
-                        <span className="text-[10px] text-gray-400 uppercase tracking-wider">Best</span>
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wider">{t('game2048.best')}</span>
                         <span className="text-lg font-bold text-pink-500">{bestScore}</span>
                     </div>
                 </div>
@@ -303,7 +305,7 @@ const Game2048: React.FC = () => {
                     onClick={initializeGame}
                     className="bg-black/60 border border-[#00f3ff] text-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.3)] px-4 py-2 rounded text-sm font-bold uppercase tracking-wider hover:bg-[#00f3ff] hover:text-black hover:shadow-[0_0_20px_#00f3ff] transition-all"
                 >
-                    New Game
+                    {t('game2048.newGame')}
                 </button>
             </div>
 
@@ -350,22 +352,22 @@ const Game2048: React.FC = () => {
                 {(gameOver || (won && !keepPlaying)) && (
                     <div className="absolute inset-0 bg-black/85 backdrop-blur-sm z-50 flex flex-col items-center justify-center rounded-xl animate-fade-in">
                         <h2 className={`text-4xl font-bold mb-2 ${won ? 'text-yellow-400 drop-shadow-[0_0_20px_yellow]' : 'text-red-500 drop-shadow-[0_0_20px_red]'}`}>
-                            {won ? 'VICTORY!' : 'GAME OVER'}
+                            {won ? t('game2048.victory') : t('game2048.gameOver')}
                         </h2>
-                        <p className="text-gray-300 mb-6">{won ? 'You reached 2048!' : 'Try again?'}</p>
+                        <p className="text-gray-300 mb-6">{won ? t('game2048.reached2048') : t('game2048.tryAgain')}</p>
                         <div className="flex gap-4">
                             <button
                                 onClick={initializeGame}
                                 className="bg-black/60 border border-[#00f3ff] text-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.3)] px-6 py-3 rounded text-lg font-bold hover:bg-[#00f3ff] hover:text-black hover:shadow-[0_0_20px_#00f3ff] transition-all"
                             >
-                                {won ? 'REPLAY' : 'RETRY'}
+                                {won ? t('game2048.replay') : t('game2048.retry')}
                             </button>
                             {won && (
                                 <button
                                     onClick={() => setKeepPlaying(true)}
                                     className="bg-black/60 border border-pink-500 text-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.3)] px-6 py-3 rounded text-lg font-bold hover:bg-pink-500 hover:text-black hover:shadow-[0_0_20px_#ec4899] transition-all"
                                 >
-                                    CONTINUE
+                                    {t('game2048.continue')}
                                 </button>
                             )}
                         </div>
@@ -374,7 +376,7 @@ const Game2048: React.FC = () => {
             </div>
 
             <div className="mt-6 text-gray-500 text-xs tracking-widest text-center px-4">
-                SWIPE OR USE ARROW KEYS
+                {t('game2048.instructions')}
             </div>
 
             <style>{`

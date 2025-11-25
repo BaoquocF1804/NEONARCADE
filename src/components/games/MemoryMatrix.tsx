@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Types
 type GameMode = 'campaign' | 'endless' | 'zen';
@@ -432,10 +433,10 @@ const MemoryMatrix: React.FC = () => {
                 {/* Game Over Overlay */}
                 {gameOver && (
                     <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center rounded-xl z-30">
-                        <h2 className="text-3xl text-red-500 font-bold mb-2">GAME OVER</h2>
-                        <p className="text-gray-300 mb-4">Final Score: {score}</p>
+                        <h2 className="text-3xl text-red-500 font-bold mb-2">{t('memory.gameOver')}</h2>
+                        <p className="text-gray-300 mb-4">{t('memory.finalScore')}: {score}</p>
                         <div className="flex gap-4">
-                            <button onClick={() => startGame(mode)} className="px-4 py-2 bg-cyan-600 rounded font-bold text-white">RETRY</button>
+                            <button onClick={() => startGame(mode)} className="px-4 py-2 bg-cyan-600 rounded font-bold text-white">{t('memory.retry')}</button>
                             <button onClick={() => setMode(null)} className="px-4 py-2 bg-gray-700 rounded font-bold text-white">MENU</button>
                         </div>
                     </div>

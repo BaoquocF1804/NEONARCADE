@@ -102,5 +102,55 @@
         "player": "NGƯỜI CHƠI",
         "score": "ĐIỂM",
         "game": "TRÒ CHƠI"
+    },
+    "shooter": {
+        "score": "ĐIỂM",
+        "highScore": "CAO NHẤT",
+        "pressStart": "NHẤN BẮT ĐẦU",
+        "startMission": "BẮT ĐẦU NHIỆM VỤ",
+        "instructions": "Dùng phím Mũi tên để di chuyển<br />Phím Space để bắn",
+        "missionFailed": "NHIỆM VỤ THẤT BẠI",
+        "retry": "THỬ LẠI"
+    },
+    "game2048": {
+        "score": "ĐIỂM",
+        "best": "TỐT NHẤT",
+        "newGame": "GAME MỚI",
+        "tryAgain": "THỬ LẠI",
+        "gameOver": "KẾT THÚC",
+        "youWin": "BẠN THẮNG!",
+        "victory": "CHIẾN THẮNG!",
+        "reached2048": "Bạn đã đạt 2048!",
+        "keepGoing": "TIẾP TỤC",
+        "continue": "TIẾP TỤC",
+        "retry": "THỬ LẠI",
+        "replay": "CHƠI LẠI",
+        "instructions": "VUỐT HOẶC DÙNG PHÍM MŨI TÊN"
+    },
+    "binary": {
+        "score": "ĐIỂM",
+        "timeLeft": "THỜI GIAN CÒN LẠI",
+        "target": "MỤC TIÊU",
+        "current": "HIỆN TẠI",
+        "start": "BẮT ĐẦU",
+        "gameOver": "KẾT THÚC",
+        "finalScore": "ĐIỂM CUỐI",
+        "playAgain": "CHƠI LẠI",
+        "submit": "XÁC NHẬN"
+    },
+    "memory": {
+        "retry": "THỬ LẠI",
+        "gameOver": "KẾT THÚC",
+        "level": "CẤP ĐỘ",
+        "score": "ĐIỂM",
+        "lives": "MẠNG",
+        "finalScore": "Điểm cuối"
+    },
+    "commonGame": {
+        "score": "ĐIỂM",
+        "highScore": "CAO NHẤT",
+        "retry": "THỬ LẠI",
+        "playAgain": "CHƠI LẠI",
+        "gameOver": "KẾT THÚC"
     }
 }

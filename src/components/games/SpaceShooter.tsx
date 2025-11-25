@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const SpaceShooter: React.FC = () => {
+    const { t } = useTranslation();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [score, setScore] = useState(0);
@@ -275,11 +277,11 @@ const SpaceShooter: React.FC = () => {
             {gameState === 'PLAYING' && (
                 <div className="absolute top-4 left-0 w-full flex justify-between px-6 pointer-events-none z-10">
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-400 tracking-widest font-heading">SCORE</span>
+                        <span className="text-xs text-gray-400 tracking-widest font-heading">{t('shooter.score')}</span>
                         <span className="text-3xl font-bold text-[#00f3ff] drop-shadow-[0_0_10px_#00f3ff] font-heading">{score}</span>
                     </div>
                     <div className="flex flex-col items-end">
-                        <span className="text-xs text-gray-400 tracking-widest font-heading">HIGH SCORE</span>
+                        <span className="text-xs text-gray-400 tracking-widest font-heading">{t('shooter.highScore')}</span>
                         <span className="text-3xl font-bold text-[#ff00ff] drop-shadow-[0_0_10px_#ff00ff] font-heading">{highScore}</span>
                     </div>
                 </div>
@@ -291,17 +293,22 @@ const SpaceShooter: React.FC = () => {
                     <h1 className="text-5xl font-black mb-2 text-[#00f3ff] drop-shadow-[0_0_10px_#00f3ff] text-center font-heading">
                         SPACE<br /><span className="text-[#ff00ff] drop-shadow-[0_0_10px_#ff00ff]">SHOOTER</span>
                     </h1>
-                    <p className="text-gray-300 mb-8 text-sm tracking-widest animate-pulse font-heading">PRESS START</p>
+                    <p className="text-gray-300 mb-8 text-sm tracking-widest animate-pulse font-heading">{t('shooter.pressStart')}</p>
 
                     <button
                         onClick={startGame}
                         className="px-8 py-3 rounded text-lg font-bold uppercase tracking-wider bg-black/60 border-2 border-[#00f3ff] text-[#00f3ff] shadow-[0_0_10px_#00f3ff] hover:bg-[#00f3ff] hover:text-black hover:shadow-[0_0_20px_#00f3ff] transition-all duration-200 font-heading"
                     >
-                        START MISSION
+                        {t('shooter.startMission')}
                     </button>
 
                     <div className="mt-8 text-gray-500 text-xs text-center font-heading">
-                        Use Arrow Keys to Move<br />Spacebar to Shoot
+                        {t('shooter.instructions').split('<br />').map((line, i) => (
+                            <React.Fragment key={i}>
+                                {line}
+                                {i < t('shooter.instructions').split('<br />').length - 1 && <br />}
+                            </React.Fragment>
+                        ))}
                     </div>
                 </div>
             )}
@@ -309,15 +316,15 @@ const SpaceShooter: React.FC = () => {
             {/* Game Over Screen */}
             {gameState === 'GAMEOVER' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-30 backdrop-blur-md">
-                    <h2 className="text-4xl font-bold mb-6 text-red-500 drop-shadow-[0_0_15px_red] font-heading">MISSION FAILED</h2>
+                    <h2 className="text-4xl font-bold mb-6 text-red-500 drop-shadow-[0_0_15px_red] font-heading">{t('shooter.missionFailed')}</h2>
 
                     <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700 w-64 mb-8 text-center backdrop-blur-xl">
                         <div className="mb-4">
-                            <p className="text-gray-400 text-xs uppercase mb-1 font-heading">SCORE</p>
+                            <p className="text-gray-400 text-xs uppercase mb-1 font-heading">{t('shooter.score')}</p>
                             <p className="text-4xl font-bold text-white font-heading">{score}</p>
                         </div>
                         <div className="border-t border-gray-600 pt-4">
-                            <p className="text-gray-400 text-xs uppercase mb-1 font-heading">HIGH SCORE</p>
+                            <p className="text-gray-400 text-xs uppercase mb-1 font-heading">{t('shooter.highScore')}</p>
                             <p className="text-2xl font-bold text-[#ff00ff] drop-shadow-[0_0_10px_#ff00ff] font-heading">{highScore}</p>
                         </div>
                     </div>
@@ -326,7 +333,7 @@ const SpaceShooter: React.FC = () => {
                         onClick={resetGame}
                         className="px-8 py-3 rounded text-lg font-bold uppercase tracking-wider mb-4 bg-black/60 border-2 border-[#00f3ff] text-[#00f3ff] shadow-[0_0_10px_#00f3ff] hover:bg-[#00f3ff] hover:text-black hover:shadow-[0_0_20px_#00f3ff] transition-all duration-200 font-heading"
                     >
-                        RETRY
+                        {t('shooter.retry')}
                     </button>
                 </div>
             )}
